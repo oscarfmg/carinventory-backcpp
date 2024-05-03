@@ -47,4 +47,9 @@ TEST(CarMemRepositoryTest, CRUDAssertions) {
     EXPECT_EQ(repoUpdate.id,-1);
     EXPECT_STREQ(repoUpdate.description.c_str(),"");
 
+    auto repoAll = repo.readAll();
+    EXPECT_EQ(repoAll.size(), 3);
+    for(const auto& car : repoAll) {
+        std::cerr << "\u001b[32m[          ] \u001b[33m" << car << "\u001b[0m" << std::endl;
+    }
 }

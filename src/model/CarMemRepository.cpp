@@ -1,7 +1,12 @@
 #include "model/CarMemRepository.h"
 
 std::vector<Car> CarMemRepository::readAll(){
-    return {Car(1,"p","u",(int)'t',"o")};
+    std::vector<Car> all;
+    all.reserve(m_cars.size());
+    for(const auto&kv : m_cars) {
+        all.push_back(kv.second);
+    }
+    return all;
 }
 
 Car CarMemRepository::create(const Car& entity) {
