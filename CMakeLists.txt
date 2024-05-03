@@ -1,4 +1,3 @@
-# include(CTest)
 cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -15,15 +14,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_executable(hcex 
-"src/main.cpp"
+set(CAR_SRCS 
 "src/model/Car.cpp"
 "src/model/CarMemRepository.cpp")
+
+add_executable(hcex 
+"src/main.cpp"
+${CAR_SRCS})
 # target_include_directories(hcex "${PROJECT_SOURCE_DIR}/")
 
 enable_testing()
-add_executable(hello_test "test/hello_test.cpp")
-target_link_libraries(hello_test GTest::gtest_main)
+add_executable(carrepo_test "test/carrepo-test.cpp" ${CAR_SRCS})
+target_link_libraries(carrepo_test GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(carrepo_test)

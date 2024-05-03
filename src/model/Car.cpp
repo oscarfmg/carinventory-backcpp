@@ -1,12 +1,14 @@
 #include "model/Car.h"
 
 Car::Car(int id, std::string model, std::string brand,
-    int kilometers, std::string price, std::string description, int years)
+    int kilometers, std::string price, std::string description, int year)
     : id(id)
     , model(model)
     , brand(brand)
     , kilometers(kilometers)
     , price(price)
+    , description(description)
+    , year(year)
 {
 }
 
