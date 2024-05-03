@@ -17,5 +17,8 @@ int main() {
 
     repo.saveToDisk();
 
+    CarMemRepository repo2("QTFG.txt");
+    repo2.readFromDisk();
+
     return 0;
 }

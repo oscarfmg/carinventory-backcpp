@@ -53,3 +53,26 @@ TEST(CarMemRepositoryTest, CRUDAssertions) {
         std::cerr << "\u001b[32m[          ] \u001b[33m" << car << "\u001b[0m" << std::endl;
     }
 }
+
+TEST(CarMemRepositoryTest, DataPersistence) {
+    Car car1(1,"uno","one",1,"eins");
+    Car car2(2,"dos","two",2,"zwei","deux",2);
+    Car car3(3,"tres","three",3,"drei","trois",3);
+    Car car4(4,"cuatro","four",4,"vier","quatre",4);
+    
+    CarMemRepository repoOut("carrepo.json");
+    repoOut.create(car1);
+    repoOut.create(car2);
+    repoOut.create(car3);
+    repoOut.create(car4);
+
+    EXPECT_EQ(repoOut.saveToDisk(),true);
+
+    CarMemRepository repoIn("carrepo.json");
+    EXPECT_EQ(repoIn.readFromDisk(),true);
+    auto repoAll = repoIn.readAll();
+    EXPECT_EQ(repoAll.size(), 4);
+    for(const auto& car : repoAll) {
+        std::cerr << "\u001b[32m[          ] \u001b[33m" << car << "\u001b[0m" << std::endl;
+    }
+}

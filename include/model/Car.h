@@ -6,11 +6,11 @@
 struct Car {
     int id;
     std::string model;
-    std::string description;
-    int year;
     std::string brand;
     int kilometers;
     std::string price;
+    std::string description;
+    int year;
 public:
     Car(int id, std::string model, std::string brand,
     int kilometers, std::string price, std::string description = "",

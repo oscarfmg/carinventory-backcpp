@@ -1,5 +1,9 @@
-#include "model/CarMemRepository.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
+
+#include "model/CarMemRepository.h"
 #include "fmt/core.h"
 #include "fmt/os.h"
 
@@ -44,6 +48,63 @@ Car CarMemRepository::del(const Car& entity){
 }
 
 bool CarMemRepository::readFromDisk() {
+    using namespace std;
+    ifstream file(m_path);
+    if(!file.is_open()) {
+        cerr << fmt::format("Error opening file {}.\n",m_path);
+        return false;
+    }
+    file.seekg(0, std::ios::end);
+    std::streampos len = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> buffer(len);
+    file.read(&buffer[0], len);
+    stringstream ss;
+    ss.rdbuf()->pubsetbuf(&buffer[0], len);
+
+    string str;
+    getline(ss, str, '[');
+    while(!ss.eof()) {
+        string obj;
+        getline(ss,str,'{');
+        if (str == "]") continue;
+        
+        getline(ss,obj,'}');
+        auto removeQuotes = [](string str) -> string {
+            str.erase(remove(str.begin(), str.end(), '\"'),str.end());
+            return str;
+        };
+        auto tokenizeKV = [&] (string kv) -> pair<string,string> {
+            stringstream sskv(kv);
+            string k, v;
+            getline(sskv,k,':');
+            sskv >> v;
+            return {removeQuotes(k),removeQuotes(v)};
+        };
+        auto tokenizeObj = [&] (string obj) -> map<string,string> {
+            map<string,string> m;
+            stringstream ssobj(obj);
+            while(!ssobj.eof()) {
+                string kv;
+                getline(ssobj,kv,',');
+                auto pkv = tokenizeKV(kv);
+                m[pkv.first]=pkv.second;
+            }
+            return m;
+        };
+        auto mobj = tokenizeObj(obj);
+        Car car(stoi(mobj["id"]),
+                mobj["model"],
+                mobj["brand"],
+                stoi(mobj["kilometers"]),
+                mobj["price"],
+                mobj["description"],
+                mobj["year"].empty()?-1:stoi(mobj["year"]));
+        m_cars[car.id] = car;
+        fmt::print("[Car] {}\n",car.toString());
+    }
+
     return true;
 }
 

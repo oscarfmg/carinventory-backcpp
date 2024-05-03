@@ -18,19 +18,19 @@ std::string Car::toString() const {
         "{{"
             "\"id\":{id},"
             "\"model\":\"{model}\","
-            "\"description\":\"{description}\","
-            "\"year\":{year},"
             "\"brand\":\"{brand}\","
             "\"kilometers\":{kilometers},"
-            "\"price\":\"{price}\""
+            "\"price\":\"{price}\","
+            "\"description\":\"{description}\","
+            "\"year\":{year}"
         "}}",
         fmt::arg("id",id),
         fmt::arg("model",model),
-        fmt::arg("description",description),
-        fmt::arg("year",year),
         fmt::arg("brand",brand),
         fmt::arg("kilometers",kilometers),
-        fmt::arg("price",price)
+        fmt::arg("price",price),
+        fmt::arg("description",description),
+        fmt::arg("year",year)
     );
 }
 
