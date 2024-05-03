@@ -102,7 +102,6 @@ bool CarMemRepository::readFromDisk() {
                 mobj["description"],
                 mobj["year"].empty()?-1:stoi(mobj["year"]));
         m_cars[car.id] = car;
-        fmt::print("[Car] {}\n",car.toString());
     }
 
     return true;
