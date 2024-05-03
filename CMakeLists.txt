@@ -1,3 +1,4 @@
+# include(CTest)
 cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -7,8 +8,22 @@ project(hcex)
 
 include_directories(include)
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+FetchContent_MakeAvailable(googletest)
+
 add_executable(hcex 
 "src/main.cpp"
 "src/model/Car.cpp"
 "src/model/CarMemRepository.cpp")
 # target_include_directories(hcex "${PROJECT_SOURCE_DIR}/")
+
+enable_testing()
+add_executable(hello_test "test/hello_test.cpp")
+target_link_libraries(hello_test GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(hello_test)
