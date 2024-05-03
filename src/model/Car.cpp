@@ -14,21 +14,16 @@ Car::Car(int id, std::string model, std::string brand,
 }
 
 std::ostream& operator <<(std::ostream &out, const Car& car) {
-    std::string fmtstr = 
+    return out << fmt::format(
         "[Car] {{"
             "\"id\":{id},"
-            "\"model\":\"{model}\",";
-    if (car.description != "")
-        fmtstr += "\"description\":\"{description}\",";
-    if (car.year > 0)
-        fmtstr += "\"year\":{year},";
-    fmtstr +=
+            "\"model\":\"{model}\","
+            "\"description\":\"{description}\","
+            "\"year\":{year},"
             "\"brand\":\"{brand}\","
             "\"kilometers\":{kilometers},"
             "\"price\":\"{price}\""
-        "}}";
-
-    return out << fmt::format(fmt::runtime(fmtstr.c_str()),
+        "}}",
         fmt::arg("id",car.id),
         fmt::arg("model",car.model),
         fmt::arg("description",car.description),
@@ -37,6 +32,4 @@ std::ostream& operator <<(std::ostream &out, const Car& car) {
         fmt::arg("kilometers",car.kilometers),
         fmt::arg("price",car.price)
     );
-
-    return out;
 }
