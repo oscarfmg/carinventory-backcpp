@@ -1,4 +1,10 @@
 #include "model/CarMemRepository.h"
+#include <iostream>
+#include "fmt/core.h"
+#include "fmt/os.h"
+
+CarMemRepository::CarMemRepository(std::string path) 
+    : m_path(path) {}
 
 std::vector<Car> CarMemRepository::readAll(){
     std::vector<Car> all;
@@ -35,4 +41,21 @@ Car CarMemRepository::del(const Car& entity){
         return entity;
     }
     return Car(-1,"Not valid","Not valid",-1,"Not valid");
+}
+
+bool CarMemRepository::readFromDisk() {
+    return true;
+}
+
+bool CarMemRepository::saveToDisk() {
+    auto out = fmt::output_file(m_path.c_str(), fmt::file::WRONLY | fmt::file::CREATE);
+    out.print("[");
+    for (auto it = m_cars.begin(); it != m_cars.end();) {
+        out.print("{}",it->second.toString());
+        ++it;
+        if (it != m_cars.end())
+            out.print(",");
+    }
+    out.print("]");
+    return true;
 }

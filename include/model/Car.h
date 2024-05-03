@@ -18,5 +18,6 @@ public:
     Car() = default;
     Car(const Car& car) = default;
 
+    std::string toString() const;
     friend std::ostream& operator <<(std::ostream &out, const Car& car);
 };

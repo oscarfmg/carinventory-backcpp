@@ -13,9 +13,9 @@ Car::Car(int id, std::string model, std::string brand,
 {
 }
 
-std::ostream& operator <<(std::ostream &out, const Car& car) {
-    return out << fmt::format(
-        "[Car] {{"
+std::string Car::toString() const {
+    return fmt::format(
+        "{{"
             "\"id\":{id},"
             "\"model\":\"{model}\","
             "\"description\":\"{description}\","
@@ -24,12 +24,16 @@ std::ostream& operator <<(std::ostream &out, const Car& car) {
             "\"kilometers\":{kilometers},"
             "\"price\":\"{price}\""
         "}}",
-        fmt::arg("id",car.id),
-        fmt::arg("model",car.model),
-        fmt::arg("description",car.description),
-        fmt::arg("year",car.year),
-        fmt::arg("brand",car.brand),
-        fmt::arg("kilometers",car.kilometers),
-        fmt::arg("price",car.price)
+        fmt::arg("id",id),
+        fmt::arg("model",model),
+        fmt::arg("description",description),
+        fmt::arg("year",year),
+        fmt::arg("brand",brand),
+        fmt::arg("kilometers",kilometers),
+        fmt::arg("price",price)
     );
+}
+
+std::ostream& operator <<(std::ostream &out, const Car& car) {
+    return out << car.toString();
 }
