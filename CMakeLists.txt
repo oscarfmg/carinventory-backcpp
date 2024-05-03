@@ -14,6 +14,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(fmt)
+
 set(CAR_SRCS 
 "src/model/Car.cpp"
 "src/model/CarMemRepository.cpp")
@@ -21,11 +28,12 @@ set(CAR_SRCS
 add_executable(hcex 
 "src/main.cpp"
 ${CAR_SRCS})
+target_link_libraries(hcex fmt::fmt)
 # target_include_directories(hcex "${PROJECT_SOURCE_DIR}/")
 
 enable_testing()
 add_executable(carrepo_test "test/carrepo-test.cpp" ${CAR_SRCS})
-target_link_libraries(carrepo_test GTest::gtest_main)
+target_link_libraries(carrepo_test GTest::gtest_main fmt::fmt)
 
 include(GoogleTest)
 gtest_discover_tests(carrepo_test)
