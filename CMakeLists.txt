@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-project(hcex)
+project(hcex LANGUAGES CXX)
 
-include_directories(include)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+
+find_package( asio REQUIRED )
 
 include(FetchContent)
 FetchContent_Declare(
@@ -20,6 +22,30 @@ FetchContent_Declare(
   GIT_TAG master
 )
 FetchContent_MakeAvailable(fmt)
+  
+include_directories(include "thirdparty/crow/" ${asio_INCLUDE})
+
+# FetchContent_Declare(
+#   Crow
+#   GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
+#   GIT_TAG master
+# )
+# FetchContent_MakeAvailable(Crow)
+
+# include(ExternalProject)
+# set(CROW crow_project)
+# ExternalProject_Add(
+#   crow_project
+#   GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
+#   GIT_TAG master
+#   PREFIX ${PROJECT_SOURCE_DIR}/external/${CROW}
+#   CONFIGURE_COMMAND cmake ../${CROW}
+#   BUILD_COMMAND cmake --build .
+#   INSTALL_COMMAND cmake --install . --prefix ${PROJECT_SOURCE_DIR}
+#   UPDATE_COMMAND ""
+# )
+# add_library(crow SHARED IMPORTED)
+# add_dependencies(crow crow_project)
 
 set(CAR_SRCS 
 "src/model/Car.cpp"
@@ -34,6 +60,9 @@ target_link_libraries(hcex fmt::fmt)
 enable_testing()
 add_executable(carrepo_test "test/carrepo-test.cpp" ${CAR_SRCS})
 target_link_libraries(carrepo_test GTest::gtest_main fmt::fmt)
+
+# add_executable(crowserver_test "test/crowserver-test.cpp" ${CROWSRVR_SRCS})
+# target_link_libraries(crowserver_test GTest::gtest_main fmt::fmt)
 
 include(GoogleTest)
 gtest_discover_tests(carrepo_test)
