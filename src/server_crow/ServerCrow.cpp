@@ -1,20 +1,14 @@
 #include <iostream>
-#include "model/Car.h"
-#include "model/CarMemRepository.h"
-#include "crow_all.h"
+#include <sstream>
+#include "server_crow/ServerCrow.h"
 
-int main() {
+void ServerCrow::init() {
     using namespace std;
+    auto& app = *this;
 
-    crow::SimpleApp app;
-    CarMemRepository repo;
-    repo.create({1,"uno","one",1,"eins"});
-    repo.create({2,"dos","two",2,"zwei","deux",2});
-    repo.create({3,"tres","three",3,"drei","trois",3});
-    repo.create({4,"cuatro","four",4,"vier","quatre",4});
-
+    /* GET */
     CROW_ROUTE(app, "/car")([&](){
-        auto all = repo.readAll();
+        auto all = m_repo->readAll();
         stringstream ss;
         ss << "[";
         for(auto it = all.begin(); it != all.end();) {
@@ -30,7 +24,7 @@ int main() {
 
     /* GET */
     CROW_ROUTE(app, "/car/<int>")([&](int id) {
-        auto car = repo.read(id);
+        auto car = m_repo->read(id);
         return crow::response{"application/json",car.id == -1 ? "{}" : car.toString()};
     });
 
@@ -58,7 +52,7 @@ int main() {
             if (car.id == -2) {
                 return crow::response(400);
             }
-            auto resp = repo.create(car);
+            auto resp = m_repo->create(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
@@ -79,15 +73,14 @@ int main() {
                 car.model = car.brand = car.price = car.description = "Not valid";
                 return;
             }
-        }
-    };
+    }};
 
     /* PATCH */
     CROW_ROUTE(app, "/car/<int>")
         .methods("PATCH"_method)([&](const crow::request& req, int id){
             auto body = crow::json::load(req.body);
             if(!body) return crow::response(400);
-            Car car = repo.read(id);
+            Car car = m_repo->read(id);
             if (car.id == -1) {
                 return crow::response(400);
             }
@@ -95,25 +88,22 @@ int main() {
             if (car.id == -2) {
                 return crow::response(400);
             }
-            auto resp = repo.update(car);
+            auto resp = m_repo->update(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
             return crow::response{"application/json", resp.toString()};
-        });
+    });
 
+    /* DELETE */
     CROW_ROUTE(app,"/car/<int>")
-        .methods("DELETE"_method)([&](const crow::request& req, int id){
+        .methods("DELETE"_method)([&](const crow::request& req, int id) {
             Car car;
             car.id=id;
-            auto resp = repo.del(car);
+            auto resp = m_repo->del(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
             return crow::response{"application/json", resp.toString()};
-        });
-
-    app.port(18080).multithreaded().run();
-
-    return 0;
+    });
 }

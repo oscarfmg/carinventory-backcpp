@@ -25,44 +25,26 @@ FetchContent_MakeAvailable(fmt)
   
 include_directories(include "thirdparty/crow/" ${asio_INCLUDE})
 
-# FetchContent_Declare(
-#   Crow
-#   GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
-#   GIT_TAG master
-# )
-# FetchContent_MakeAvailable(Crow)
-
-# include(ExternalProject)
-# set(CROW crow_project)
-# ExternalProject_Add(
-#   crow_project
-#   GIT_REPOSITORY https://github.com/CrowCpp/Crow.git
-#   GIT_TAG master
-#   PREFIX ${PROJECT_SOURCE_DIR}/external/${CROW}
-#   CONFIGURE_COMMAND cmake ../${CROW}
-#   BUILD_COMMAND cmake --build .
-#   INSTALL_COMMAND cmake --install . --prefix ${PROJECT_SOURCE_DIR}
-#   UPDATE_COMMAND ""
-# )
-# add_library(crow SHARED IMPORTED)
-# add_dependencies(crow crow_project)
-
 set(CAR_SRCS 
 "src/model/Car.cpp"
 "src/model/CarMemRepository.cpp")
 
-add_executable(hcex 
-"src/main.cpp"
-${CAR_SRCS})
-target_link_libraries(hcex fmt::fmt)
-# target_include_directories(hcex "${PROJECT_SOURCE_DIR}/")
+set(SRVRCROW_SRCS
+"src/server_crow/ServerCrow.cpp"
+)
+add_executable(server-crow
+${CAR_SRCS}
+${SRVRCROW_SRCS}
+"src/server_crow/main.cpp")
+target_link_libraries(server-crow fmt::fmt)
 
 enable_testing()
 add_executable(carrepo_test "test/carrepo-test.cpp" ${CAR_SRCS})
 target_link_libraries(carrepo_test GTest::gtest_main fmt::fmt)
 
-# add_executable(crowserver_test "test/crowserver-test.cpp" ${CROWSRVR_SRCS})
-# target_link_libraries(crowserver_test GTest::gtest_main fmt::fmt)
+add_executable(crowserver_test "test/servercrow-test.cpp" ${CAR_SRCS} ${SRVRCROW_SRCS})
+target_link_libraries(crowserver_test GTest::gtest_main fmt::fmt)
 
 include(GoogleTest)
-gtest_discover_tests(carrepo_test)
+gtest_discover_tests(carrepo_test "" AUTO)
+gtest_discover_tests(crowserver_test "" AUTO)

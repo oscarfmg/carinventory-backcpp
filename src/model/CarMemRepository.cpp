@@ -64,8 +64,14 @@ bool CarMemRepository::readFromDisk() {
 
     std::vector<char> buffer(len);
     file.read(&buffer[0], len);
+
+    return readFromString(&buffer[0]);
+}
+bool CarMemRepository::readFromString(const std::string_view json) {
+    using namespace std;
+
     stringstream ss;
-    ss.rdbuf()->pubsetbuf(&buffer[0], len);
+    ss.rdbuf()->pubsetbuf(const_cast<char*>(json.data()), json.length());
 
     string str;
     getline(ss, str, '[');
