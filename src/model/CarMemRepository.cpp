@@ -44,8 +44,9 @@ Car CarMemRepository::update(const Car& entity) {
 
 Car CarMemRepository::del(const Car& entity){
     if (m_cars.contains(entity.id)) {
+        auto car = m_cars[entity.id];
         m_cars.erase(entity.id);
-        return entity;
+        return car;
     }
     return Car(-1,"Not valid","Not valid",-1,"Not valid");
 }
