@@ -1,46 +1,17 @@
 {
-    "C_Cpp.default.cppStandard": "c++20",
-    "C_Cpp.default.includePath": [
-        "${workspace}"
-    ],
-    "C_Cpp.intelliSenseEngine": "default",
-    "files.associations": {
-        "map": "cpp"
-    },
-    "coverage-gutters.coverageFileNames": [
-        "lcov.info",
-        "cov.xml",
-        "coverage.xml",
-        "jacoco.xml",
-        "coverage.cobertura.xml"
-    ]
-/*    "cmake.defaultVariants": {
-        "buildType": {
-            "default": "debug",
-            "description": "The build type.",
-            "choices": {
-                "debug": {
-                    "short": "Debug",
-                    "long": "Disable optimizations - include debug information.",
-                    "buildType": "Debug"
-                },
-                "release": {
-                    "short": "Release",
-                    "long": "Optimize for speed - exclude debug information.",
-                    "buildType": "Release"
-                },
-                "minsize": {
-                    "short": "MinSizeRel",
-                    "long": "Optimize for smallest binary size - exclude debug information.",
-                    "buildType": "MinSizeRel"
-                },
-                "reldeb": {
-                    "short": "RelWithDebInfo",
-                    "long": "Optimize for speed - include debug information.",
-                    "buildType": "RelWithDebInfo"
-                }
-            }
-        }
-    }*/
-    // "cmake.options.statusBarVisibility": "hidden",
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.includePath": ["${workspace}"],
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "map": "cpp"
+  },
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml",
+    "coverage.cobertura.xml"
+  ],
+  "cmake.configureOnOpen": true,
+  "cmake.options.statusBarVisibility": "hidden"
 }
