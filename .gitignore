@@ -1,2 +1,4 @@
 build
-.vscode/settings.json
+coverage
+lcov_base.info
+lcov.info
