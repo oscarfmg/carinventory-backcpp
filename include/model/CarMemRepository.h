@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "model/CarRepository.h"
 
-class CarMemRepository : CarRepository {
+class CarMemRepository : public CarRepository {
     std::unordered_map<int, Car> m_cars;
     std::string m_path;
 public:
@@ -18,4 +18,5 @@ public:
     CarMemRepository(std::string path);
     bool readFromDisk();
     bool saveToDisk();
+    bool readFromString(const std::string_view json);
 };

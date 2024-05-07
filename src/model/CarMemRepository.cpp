@@ -20,8 +20,11 @@ std::vector<Car> CarMemRepository::readAll(){
 }
 
 Car CarMemRepository::create(const Car& entity) {
-    m_cars[entity.id] = entity;
-    return entity;
+    if (!m_cars.contains(entity.id)) {
+        m_cars[entity.id] = entity;
+        return entity;
+    }
+    return Car(-1,"Not valid","Not valid",-1,"Not valid");
 }
 
 Car CarMemRepository::read(int id) {
@@ -41,8 +44,9 @@ Car CarMemRepository::update(const Car& entity) {
 
 Car CarMemRepository::del(const Car& entity){
     if (m_cars.contains(entity.id)) {
+        auto car = m_cars[entity.id];
         m_cars.erase(entity.id);
-        return entity;
+        return car;
     }
     return Car(-1,"Not valid","Not valid",-1,"Not valid");
 }
@@ -60,8 +64,14 @@ bool CarMemRepository::readFromDisk() {
 
     std::vector<char> buffer(len);
     file.read(&buffer[0], len);
+
+    return readFromString(&buffer[0]);
+}
+bool CarMemRepository::readFromString(const std::string_view json) {
+    using namespace std;
+
     stringstream ss;
-    ss.rdbuf()->pubsetbuf(&buffer[0], len);
+    ss.rdbuf()->pubsetbuf(const_cast<char*>(json.data()), json.length());
 
     string str;
     getline(ss, str, '[');

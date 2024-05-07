@@ -3,5 +3,5 @@
 #include "IRepository.h"
 #include "Car.h"
 
-class CarRepository : IRepository<Car> {
+struct CarRepository : public IRepository<Car> {
 };
