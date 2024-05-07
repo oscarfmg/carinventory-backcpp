@@ -25,7 +25,10 @@ void ServerCrow::init() {
     /* GET */
     CROW_ROUTE(app, "/car/<int>")([&](int id) {
         auto car = m_repo->read(id);
-        return crow::response{"application/json",car.id == -1 ? "{}" : car.toString()};
+        if (car.id == -1) {
+            return crow::response(404);
+        }
+        return crow::response{"application/json", car.toString()};
     });
 
     auto json2Car = [](crow::json::rvalue &json, int id = -1) -> Car {
@@ -82,7 +85,7 @@ void ServerCrow::init() {
             if(!body) return crow::response(400);
             Car car = m_repo->read(id);
             if (car.id == -1) {
-                return crow::response(400);
+                return crow::response(404);
             }
             patchCar(body, car);
             if (car.id == -2) {
@@ -102,7 +105,7 @@ void ServerCrow::init() {
             car.id=id;
             auto resp = m_repo->del(car);
             if (resp.id == -1) {
-                return crow::response(400);
+                return crow::response(404);
             }
             return crow::response{"application/json", resp.toString()};
     });
