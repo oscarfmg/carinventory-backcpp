@@ -1,0 +1,17 @@
+{
+  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.includePath": ["${workspace}"],
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "map": "cpp"
+  },
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml",
+    "coverage.cobertura.xml"
+  ],
+  "cmake.configureOnOpen": true,
+  "cmake.options.statusBarVisibility": "hidden"
+}
