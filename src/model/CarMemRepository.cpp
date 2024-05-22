@@ -118,7 +118,7 @@ bool CarMemRepository::readFromString(const std::string_view json) {
 }
 
 bool CarMemRepository::saveToDisk() {
-    auto out = fmt::output_file(m_path.c_str(), fmt::file::WRONLY | fmt::file::CREATE);
+    auto out = fmt::output_file(m_path.c_str(), fmt::file::WRONLY | fmt::file::CREATE | fmt::file::TRUNC);
     out.print("[");
     for (auto it = m_cars.begin(); it != m_cars.end();) {
         out.print("{}",it->second.toString());
@@ -127,5 +127,6 @@ bool CarMemRepository::saveToDisk() {
             out.print(",");
     }
     out.print("]");
+    out.close();
     return true;
 }
