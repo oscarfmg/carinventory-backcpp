@@ -1,20 +1,28 @@
 #include <iostream>
 #include <sstream>
 #include "server_crow/ServerCrow.h"
+#include "fmt/core.h"
 
 void ServerCrow::init() {
     using namespace std;
     auto& app = *this;
 
     /* GET */
-    CROW_ROUTE(app, "/car")([&](){
-        auto all = m_repo->readAll();
+    CROW_ROUTE(app, "/car")([&](const crow::request& req){
+        int start = req.url_params.get("start") ? stoi(req.url_params.get("start")) : -1;
+        int limit = req.url_params.get("limit") ? stoi(req.url_params.get("limit")) : 0;
+
+        vector<Car> cars;
+        if (start < 0)
+            cars = m_repo->readAll();
+        else
+            cars = dynamic_cast<CarMemRepository*>(m_repo)->read(start,limit);
         stringstream ss;
         ss << "[";
-        for(auto it = all.begin(); it != all.end();) {
+        for(auto it = cars.begin(); it != cars.end();) {
             ss << *it;
             ++it;
-            if (it != all.end()) {
+            if (it != cars.end()) {
                 ss << ",";
             }
         }
@@ -29,6 +37,13 @@ void ServerCrow::init() {
             return crow::response(404);
         }
         return crow::response{"application/json", car.toString()};
+    });
+
+    /* GET */
+    CROW_ROUTE(app, "/car/getCount")([&]() {
+        int count = dynamic_cast<CarMemRepository*>(m_repo)->getCount();
+        auto ans = fmt::format("{{\"count\":{}}}",count);
+        return crow::response("application/json", ans);
     });
 
     auto json2Car = [](crow::json::rvalue &json, int id = -1) -> Car {

@@ -76,3 +76,27 @@ TEST(CarMemRepositoryTest, DataPersistence) {
         std::cerr << "\u001b[32m[          ] \u001b[33m" << car << "\u001b[0m" << std::endl;
     }
 }
+
+TEST(CarMemRepositoryTest, SubRange)
+{
+    Car car1(1,"uno","one",1,"eins");
+    Car car2(2,"dos","two",2,"zwei","deux",2);
+    Car car3(3,"tres","three",3,"drei","trois",3);
+    Car car4(4,"cuatro","four",4,"vier","quatre",4);
+
+    CarMemRepository repo;
+    repo.create(car1);
+    repo.create(car2);
+    repo.create(car3);
+    repo.create(car4);
+
+    auto cars = repo.read(1,2); // Read 2 cars, starting from 1
+    EXPECT_EQ(cars.size(), 2) << "Expected 2 cars";
+    EXPECT_EQ(cars[0].id, 2) << "Expected car id=2";
+    EXPECT_EQ(cars[1].id, 3) << "Expected car id=3";
+
+    cars = repo.read(2,0);
+    EXPECT_EQ(cars.size(), 2) << "Expected 2 cars";
+    EXPECT_EQ(cars[0].id, 3) << "Expected car id=3";
+    EXPECT_EQ(cars[1].id, 4) << "Expected car id=4";
+}
