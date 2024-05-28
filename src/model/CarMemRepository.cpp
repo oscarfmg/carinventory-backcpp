@@ -19,6 +19,20 @@ std::vector<Car> CarMemRepository::readAll(){
     return all;
 }
 
+std::vector<Car> CarMemRepository::read(uint start, uint limit) {
+    std::vector<Car> cars;
+    auto it = m_cars.begin();
+    std::advance(it, start);
+    for (int cnt = 0; it != m_cars.end() and (0 == limit or cnt < limit); ++it, ++cnt) {
+        cars.push_back(it->second);
+    }
+    return cars;
+}
+
+uint CarMemRepository::getCount() const {
+    return m_cars.size();
+}
+
 Car CarMemRepository::create(const Car& entity) {
     if (!m_cars.contains(entity.id)) {
         m_cars[entity.id] = entity;

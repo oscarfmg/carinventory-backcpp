@@ -52,45 +52,68 @@ void ServerCrowTest::TearDown() {
 }
 
 TEST_F(ServerCrowTest, REST_GetAll) {
-    using namespace std;
+    crow::request req;
+    crow::response res;
 
-    {
-        crow::request req;
-        crow::response res;
+    req.url = "/car";
+    app.handle_full(req,res);
+    EXPECT_EQ(res.code, HTTP_OK);
 
-        req.url = "/car";
-        app.handle_full(req,res);
-        EXPECT_EQ(res.code, HTTP_OK);
+    CarMemRepository rep2;
+    rep2.readFromString(res.body);
 
-        CarMemRepository rep2;
-        rep2.readFromString(res.body);
+    auto all1 = repo.readAll();
+    auto all2 = rep2.readAll();
+    EXPECT_EQ(all1.size(), all2.size());
+    EXPECT_EQ(repo.read(1).brand,repo.read(1).brand);
+}
 
-        auto all1 = repo.readAll();
-        auto all2 = rep2.readAll();
-        EXPECT_EQ(all1.size(), all2.size());
-        EXPECT_EQ(repo.read(1).brand,repo.read(1).brand);
-    }
+TEST_F(ServerCrowTest, REST_GetParams) {
+    crow::request req;
+    crow::response res;
+
+    req.url = "/car";
+    req.url_params = crow::query_string("start=1&limit=2",false);
+    app.handle_full(req,res);
+    EXPECT_EQ(res.code, HTTP_OK);
+
+    CarMemRepository repo2;
+    repo2.readFromString(res.body);
+
+    auto cars = repo2.readAll();
+    EXPECT_EQ(cars.size(), 2) << "Expected 2 cars";
+    EXPECT_EQ(cars[0].id, 2) << "Expected car id=2";
+    EXPECT_EQ(cars[1].id, 3) << "Expected car id=3";
 }
 
 TEST_F(ServerCrowTest, REST_Get) {
-    using namespace std;
+    crow::request req;
+    crow::response res;
 
-    {
-        crow::request req;
-        crow::response res;
+    req.url = "/car/3";
+    app.handle_full(req,res);
+    EXPECT_EQ(res.code, HTTP_OK);
 
-        req.url = "/car/3";
-        app.handle_full(req,res);
-        EXPECT_EQ(res.code, HTTP_OK);
+    Car car;
+    auto json = crow::json::load(res.body);
+    json2Car(json,car);
 
-        Car car;
-        auto json = crow::json::load(res.body);
-        json2Car(json,car);
+    EXPECT_EQ(car.id, 3);
+    EXPECT_EQ(car.model, "tres");
+    EXPECT_EQ(car.brand, "three");
+}
 
-        EXPECT_EQ(car.id, 3);
-        EXPECT_EQ(car.model, "tres");
-        EXPECT_EQ(car.brand, "three");
-    }
+TEST_F(ServerCrowTest, REST_GetCount) {
+    crow::request req;
+    crow::response res;
+
+    req.url = "/car/getCount";
+    app.handle_full(req,res);
+    EXPECT_EQ(res.code, HTTP_OK);
+
+    auto json = crow::json::load(res.body);
+    auto count = json["count"].i();
+    EXPECT_EQ(count, 4);
 }
 
 TEST_F(ServerCrowTest, REST_Post) {
