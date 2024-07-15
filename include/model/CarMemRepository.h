@@ -7,6 +7,7 @@
 class CarMemRepository : public CarRepository {
     std::map<int, Car> m_cars;
     std::string m_path;
+    int m_lastID;
 public:
     std::vector<Car> readAll() override;
     Car create(const Car& entity) override;
@@ -16,6 +17,7 @@ public:
 
     std::vector<Car> read(uint start, uint limit);
     uint getCount() const;
+    int  getNextID();
 
     CarMemRepository() = default;
     CarMemRepository(std::string path);

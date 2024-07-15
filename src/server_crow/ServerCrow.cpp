@@ -77,6 +77,23 @@ void ServerCrow::init() {
             return crow::response{"application/json", resp.toString()};
     });
 
+    /* POST */
+    CROW_ROUTE(app, "/car")
+        .methods("POST"_method)([&](const crow::request& req) {
+            auto body = crow::json::load(req.body);
+            if(!body) return crow::response(400);
+            int nextID = dynamic_cast<CarMemRepository*>(m_repo)->getNextID();
+            Car car = json2Car(body, nextID);
+            if (car.id == -2) {
+                return crow::response(400);
+            }
+            auto resp = m_repo->create(car);
+            if (resp.id == -1) {
+                return crow::response(400);
+            }
+            return crow::response{"application/json", resp.toString()};
+        });
+
     auto patchCar = [](const crow::json::rvalue& json, Car& car) {
         for (const auto& key : json.keys()) {
                  if (key == "id") car.id = json["id"].i();
