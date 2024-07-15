@@ -8,7 +8,8 @@
 #include "fmt/os.h"
 
 CarMemRepository::CarMemRepository(std::string path) 
-    : m_path(path) {}
+    : m_path(path)
+    , m_lastID(0) {}
 
 std::vector<Car> CarMemRepository::readAll(){
     std::vector<Car> all;
@@ -31,6 +32,10 @@ std::vector<Car> CarMemRepository::read(uint start, uint limit) {
 
 uint CarMemRepository::getCount() const {
     return m_cars.size();
+}
+
+int CarMemRepository::getNextID() {
+    return ++m_lastID;
 }
 
 Car CarMemRepository::create(const Car& entity) {
@@ -127,6 +132,8 @@ bool CarMemRepository::readFromString(const std::string_view json) {
                 mobj["year"].empty()?-1:stoi(mobj["year"]));
         m_cars[car.id] = car;
     }
+
+    m_lastID = m_cars.rbegin()->first;
 
     return true;
 }
