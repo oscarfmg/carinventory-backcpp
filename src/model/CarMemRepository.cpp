@@ -89,8 +89,13 @@ bool CarMemRepository::readFromDisk() {
 bool CarMemRepository::readFromString(const std::string_view json) {
     using namespace std;
 
+#ifndef __APPLE__
     stringstream ss;
     ss.rdbuf()->pubsetbuf(const_cast<char*>(json.data()), json.length());
+#else
+    stringstream ss;
+    ss << json.data();
+#endif
 
     string str;
     getline(ss, str, '[');
