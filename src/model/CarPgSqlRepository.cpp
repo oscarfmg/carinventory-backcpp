@@ -16,7 +16,7 @@ std::vector<Car> CarPgSqlRepository::readAll() {
         pqxx::work tx{c};
         for (auto [id, model, brand, kilometers, price, description, year] :
              tx.stream<int, std::string, std::string, int, std::string, std::optional<std::string>, std::optional<int>>(
-                 "SELECT id,model,brand,kilometers,price,description,year FROM cars")) {
+                 "SELECT id,model,brand,kilometers,price,description,year FROM cars ORDER BY id")) {
             cars.push_back(Car(id,model,brand,kilometers,price,description.value_or(""),year.value_or(-1)));
         }
     } catch (std::exception &ex) {
@@ -33,7 +33,8 @@ Car CarPgSqlRepository::create(const Car &entity) {
             "SELECT * FROM public.insert_car($1::text, $2, $3, $4, $5, $6); ",
             pqxx::params{
             entity.model, entity.brand, entity.kilometers,
-            entity.price, std::optional<std::string>(entity.description == "" ? nullptr : entity.description),
+            entity.price,
+            std::optional<std::string>(entity.description.empty() ? std::nullopt : std::optional<std::string>(entity.description)),
             std::optional<int>(entity.year == -1 ? std::nullopt : std::optional<int>(entity.year))});
         tx.commit();
         return Car(res["id"].as<int>(), res["model"].as<std::string>(),
@@ -43,7 +44,7 @@ Car CarPgSqlRepository::create(const Car &entity) {
     } catch (std::exception &ex) {
         std::cerr << "Error creating Car: " << ex.what() << "\n";
     }
-    
+
     return notValidCar();
 }
 
@@ -108,7 +109,22 @@ Car CarPgSqlRepository::del(const Car &entity) {
 }
 
 std::vector<Car> CarPgSqlRepository::read(uint start, uint limit) {
-    auto cars = std::vector<Car>();
+    std::vector<Car> cars;
+    try
+    {
+        pqxx::connection c{m_connString};
+        pqxx::work tx{c};
+        std::string stmt = fmt::format("SELECT id,model,brand,kilometers,price,description,year "
+                                            " FROM cars ORDER BY id OFFSET {} LIMIT {}",start,limit);
+        for (auto [id, model, brand, kilometers, price, description, year] :
+             tx.stream<int, std::string, std::string, int, std::string, std::optional<std::string>, std::optional<int>>(stmt)) {
+            cars.push_back(Car(id, model, brand, kilometers, price, description.value_or(""), year.value_or(-1)));
+        }
+    }
+    catch (std::exception &ex)
+    {
+        std::cerr << "Error reading Car: " << ex.what() << "\n";
+    }
     return cars;
 }
 

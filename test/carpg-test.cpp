@@ -61,4 +61,8 @@ TEST(CarPgSqlRepositoryTest, CRUDAssertions) {
     EXPECT_EQ(deletedCar.id,car.id) << "Deleted ID doesn't matches expected ID";
     car = repo.read(deletedCar.id);
     EXPECT_EQ(car.id,-1) << "Deleted Car should not be found";
+
+    for (auto &car : repo.read(2, 6)) {
+        printCar(car);
+    }
 }
