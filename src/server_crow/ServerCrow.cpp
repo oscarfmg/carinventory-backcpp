@@ -16,7 +16,7 @@ void ServerCrow::init() {
         if (start < 0)
             cars = m_repo->readAll();
         else
-            cars = dynamic_cast<CarMemRepository*>(m_repo)->read(start,limit);
+            cars = m_repo->read(start,limit);
         stringstream ss;
         ss << "[";
         for(auto it = cars.begin(); it != cars.end();) {
@@ -41,7 +41,7 @@ void ServerCrow::init() {
 
     /* GET */
     CROW_ROUTE(app, "/car/getCount")([&]() {
-        int count = dynamic_cast<CarMemRepository*>(m_repo)->getCount();
+        int count = m_repo->getCount();
         auto ans = fmt::format("{{\"count\":{}}}",count);
         return crow::response("application/json", ans);
     });
@@ -82,7 +82,7 @@ void ServerCrow::init() {
         .methods("POST"_method)([&](const crow::request& req) {
             auto body = crow::json::load(req.body);
             if(!body) return crow::response(400);
-            int nextID = dynamic_cast<CarMemRepository*>(m_repo)->getNextID();
+            int nextID = m_repo->getNextID();
             Car car = json2Car(body, nextID);
             if (car.id == -2) {
                 return crow::response(400);

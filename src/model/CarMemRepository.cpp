@@ -39,7 +39,7 @@ int CarMemRepository::getNextID() {
 }
 
 Car CarMemRepository::create(const Car& entity) {
-    if (!m_cars.contains(entity.id)) {
+    if (auto search = m_cars.find(entity.id); search == m_cars.end()) {
         m_cars[entity.id] = entity;
         return entity;
     }
@@ -47,14 +47,14 @@ Car CarMemRepository::create(const Car& entity) {
 }
 
 Car CarMemRepository::read(int id) {
-    if (m_cars.contains(id)) {
+    if (auto search = m_cars.find(id); search != m_cars.end()) {
         return m_cars[id];
     }
     return Car(-1,"Not valid","Not valid",-1,"Not valid");
 }
 
 Car CarMemRepository::update(const Car& entity) {
-    if (m_cars.contains(entity.id)) {
+    if (auto search = m_cars.find(entity.id); search != m_cars.end()) {
         m_cars[entity.id] = entity;
         return entity;
     }
@@ -62,7 +62,7 @@ Car CarMemRepository::update(const Car& entity) {
 }
 
 Car CarMemRepository::del(const Car& entity){
-    if (m_cars.contains(entity.id)) {
+    if (auto search = m_cars.find(entity.id); search != m_cars.end()) {
         auto car = m_cars[entity.id];
         m_cars.erase(entity.id);
         return car;

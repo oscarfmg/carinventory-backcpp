@@ -2,6 +2,8 @@
 // #define CROW_LOG_LEVEL 0
 
 #include <gtest/gtest.h>
+#include "model/CarMemRepository.h"
+#include "model/CarPgSqlRepository.h"
 #include "server_crow/ServerCrow.h"
 #include <fmt/core.h>
 
