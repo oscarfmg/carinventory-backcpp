@@ -17,7 +17,7 @@ std::vector<Car> CarPgSqlRepository::readAll() {
         for (auto [id, model, brand, kilometers, price, description, year] :
              tx.stream<int, std::string, std::string, int, std::string, std::optional<std::string>, std::optional<int>>(
                  "SELECT id,model,brand,kilometers,price,description,year FROM cars ORDER BY id")) {
-            cars.push_back(Car(id,model,brand,kilometers,price,description.value_or(""),year.value_or(-1)));
+            cars.emplace_back(id,model,brand,kilometers,price,description.value_or(""),year.value_or(-1));
         }
     } catch (std::exception &ex) {
         std::cerr << ex.what() << "\n";
@@ -118,7 +118,7 @@ std::vector<Car> CarPgSqlRepository::read(uint start, uint limit) {
                                             " FROM cars ORDER BY id OFFSET {} LIMIT {}",start,limit);
         for (auto [id, model, brand, kilometers, price, description, year] :
              tx.stream<int, std::string, std::string, int, std::string, std::optional<std::string>, std::optional<int>>(stmt)) {
-            cars.push_back(Car(id, model, brand, kilometers, price, description.value_or(""), year.value_or(-1)));
+            cars.emplace_back(id, model, brand, kilometers, price, description.value_or(""), year.value_or(-1));
         }
     }
     catch (std::exception &ex)

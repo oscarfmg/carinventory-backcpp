@@ -1,3 +1,31 @@
+-- Table: public.cars
+
+-- DROP TABLE IF EXISTS public.cars;
+
+CREATE TABLE IF NOT EXISTS public.cars
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    model character varying COLLATE pg_catalog."default" NOT NULL,
+    brand character varying COLLATE pg_catalog."default" NOT NULL,
+    kilometers integer NOT NULL,
+	price character varying COLLATE pg_catalog."default" NOT NULL,
+    description character varying COLLATE pg_catalog."default",
+    year integer,
+    CONSTRAINT cars_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.cars
+    OWNER to crowadmin;
+
+REVOKE ALL ON TABLE public.cars FROM crowclient;
+
+GRANT ALL ON TABLE public.cars TO crowadmin;
+
+GRANT DELETE, UPDATE, INSERT, SELECT ON TABLE public.cars TO crowclient;
+
+
 create or replace function public.insert_car(
     IN model character varying,
     IN brand character varying,
