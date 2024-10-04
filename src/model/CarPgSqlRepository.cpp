@@ -29,56 +29,113 @@ Car CarPgSqlRepository::create(const Car &entity) {
     try {
         pqxx::connection c{m_connString};
         pqxx::work tx{c};
-        std::string stmt = fmt::format(
-            "do $$ "
-            "begin "
-            "call insert_car($1,$2,$3,$4,$5,$6); "
-            "end $$"
-        );
-        c.prepare("create",stmt);
-        pqxx::result res = tx.exec_prepared("create",
-            entity.model, entity.brand, entity.kilometers, 
-            entity.price,entity.description,entity.year);
+        auto res = tx.exec_params1(
+            "SELECT * FROM public.insert_car($1::text, $2, $3, $4, $5, $6); ",
+            pqxx::params{
+            entity.model, entity.brand, entity.kilometers,
+            entity.price, std::optional<std::string>(entity.description == "" ? nullptr : entity.description),
+            std::optional<int>(entity.year == -1 ? std::nullopt : std::optional<int>(entity.year))});
+        tx.commit();
+        return Car(res["id"].as<int>(), res["model"].as<std::string>(),
+                   res["brand"].as<std::string>(), res["kilometers"].as<int>(),
+                   res["price"].as<std::string>(), res["description"].as<std::string>(""),
+                   res["year"].as<int>(-1));
     } catch (std::exception &ex) {
-
+        std::cerr << "Error creating Car: " << ex.what() << "\n";
     }
-    return Car();
+    
+    return notValidCar();
 }
+
 Car CarPgSqlRepository::read(int id) {
     try
     {
         pqxx::connection c{m_connString};
         pqxx::work tx{c};
         auto res = tx.exec_params1(
-            "SELECT id,model,brand,kilometers,price,description,year from cars WHERE cars.id = $1", id);
-        return Car(res[0].as<int>(), res[1].as<std::string>(),
-            res[2].as<std::string>(), res[3].as<int>(),
-            res[4].as<std::string>(), res[5].as<std::string>(""),
-            res[6].as<int>(-1));
+            "SELECT id,model,brand,kilometers,price,description,year FROM cars WHERE cars.id = $1", 
+            pqxx::params{id});
+        return Car(res["id"].as<int>(), res["model"].as<std::string>(),
+            res["brand"].as<std::string>(), res["kilometers"].as<int>(),
+            res["price"].as<std::string>(), res["description"].as<std::string>(""),
+            res["year"].as<int>(-1));
     }
     catch (std::exception &ex)
     {
+        std::cerr << "Error reading Car: " << ex.what() << "\n";
+    }
+
+    return notValidCar();
+}
+
+Car CarPgSqlRepository::update(const Car &entity) {
+    try {
+        pqxx::connection c{m_connString};
+        pqxx::work tx{c};
+        auto res = tx.exec_params1(
+            "SELECT * FROM public.update_car($1,$2,$3,$4,$5,$6,$7);",
+            pqxx::params{
+            entity.id, entity.model,entity.brand, entity.kilometers,
+            entity.price, entity.description, entity.year});
+        tx.commit();
+        return Car(res["id"].as<int>(), res["model"].as<std::string>(),
+                   res["brand"].as<std::string>(), res["kilometers"].as<int>(),
+                   res["price"].as<std::string>(), res["description"].as<std::string>(""),
+                   res["year"].as<int>(-1));
+    } catch (std::exception &ex) {
         std::cerr << ex.what() << "\n";
     }
-    return Car(-1, "Not valid", "Not valid", -1, "Not valid");
+
+    return notValidCar();
 }
-Car CarPgSqlRepository::update(const Car &entity) {
-    return Car();
-}
+
 Car CarPgSqlRepository::del(const Car &entity) {
-    return Car();
+    try {
+        pqxx::connection c{m_connString};
+        pqxx::work tx{c};
+        auto res = tx.exec_params1(
+            "SELECT * FROM public.delete_car($1);",
+            pqxx::params{entity.id});
+        tx.commit();
+        return Car(res["id"].as<int>(), res["model"].as<std::string>(),
+                   res["brand"].as<std::string>(), res["kilometers"].as<int>(),
+                   res["price"].as<std::string>(), res["description"].as<std::string>(""),
+                   res["year"].as<int>(-1));
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << "\n";
+    }
+    return notValidCar();
 }
 
 std::vector<Car> CarPgSqlRepository::read(uint start, uint limit) {
     auto cars = std::vector<Car>();
     return cars;
 }
+
 uint CarPgSqlRepository::getCount() const {
+    try {
+        pqxx::connection c{m_connString};
+        pqxx::work tx{c};
+        return tx.query_value<int>("SELECT public.get_cars_count()");
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << "\n";
+    }
     return 0;
 }
 
 int CarPgSqlRepository::getNextID() {
-    return 1;
+    try {
+        pqxx::connection c{m_connString};
+        pqxx::work tx{c};
+        return tx.query_value<int>("SELECT public.get_next_carID()");
+    } catch (std::exception &ex) {
+        std::cerr << ex.what() << "\n";
+    }
+    return 0;
+}
+
+Car CarPgSqlRepository::notValidCar() const {
+    return Car(-1, "Not valid", "Not valid", -1, "Not valid");
 }
 
 inline void ltrim(std::string &s) {
@@ -151,7 +208,6 @@ bool CarPgSqlRepository::configureConnection(std::string confFile) {
 
     try {
         pqxx::connection c{pqxx::zview(connString)};
-        fmt::print("Connected to {}\n",c.dbname());
         m_connString = connString;
     } catch (std::exception &e) {
         std::cerr << "ERROR: " << e.what() << "\n";

@@ -15,9 +15,9 @@ public:
     Car update(const Car& entity) override;
     Car del(const Car& entity) override;
 
-    std::vector<Car> read(uint start, uint limit);
-    uint getCount() const;
-    int  getNextID();
+    std::vector<Car> read(uint start, uint limit) override;
+    uint getCount() const override;
+    int  getNextID() override;
 
     CarMemRepository() = default;
     CarMemRepository(std::string path);

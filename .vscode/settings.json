@@ -14,5 +14,12 @@
   ],
   "cmake.configureOnOpen": false,
   "cmake.options.statusBarVisibility": "hidden",
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cmake.debugConfig": {
+    "name": "Debug CMake project",
+    "type": "lldb",
+    "request": "launch",
+    "program": "${command:cmake.launchTargetPath}",
+    "args": [],
+  }
 }

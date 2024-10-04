@@ -15,6 +15,8 @@ class CarPgSqlRepository : public CarRepository
     bool m_requireSsl;
     std::string m_connString;
 
+    Car notValidCar() const;
+
 public:
     std::vector<Car> readAll() override;
     Car create(const Car &entity) override;
@@ -22,9 +24,9 @@ public:
     Car update(const Car &entity) override;
     Car del(const Car &entity) override;
 
-    std::vector<Car> read(uint start, uint limit);
-    uint getCount() const;
-    int getNextID();
+    std::vector<Car> read(uint start, uint limit) override;
+    uint getCount() const override;
+    int getNextID() override;
 
     CarPgSqlRepository() = default;
     bool configureConnection(std::string confFile = ".env");
