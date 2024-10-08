@@ -29,6 +29,7 @@ public:
     int getNextID() override;
 
     CarPgSqlRepository() = default;
+    CarPgSqlRepository(std::string& connString);
     bool configureConnection(std::string confFile = ".env");
     bool readConfigFile(std::string confFile);
 };

@@ -5,19 +5,24 @@
 int main() {
     using namespace std;
 
-    //CarMemRepository repo("cars.json");
-    CarPgSqlRepository repo;
-    repo.configureConnection();
+    CarPgSqlRepository pgrepo = CarPgSqlRepository();
+    CarMemRepository memrepo("cars.json");
+    ServerCrow app(USE_PGSQL_REPO 
+                    ? dynamic_cast<CarRepository&>(pgrepo) 
+                    : dynamic_cast<CarRepository&>(memrepo));
 
-    ServerCrow app;
+    if (USE_PGSQL_REPO) {
+        pgrepo.configureConnection();
+    }
+    else {
+        memrepo.readFromDisk();
+    }
 
-    app.setRepo(&repo);
     app.init();
-
-//    repo.readFromDisk();
     app.port(18080).multithreaded().run();
 
-//    repo.saveToDisk();
+    if (not USE_PGSQL_REPO)
+        memrepo.saveToDisk();
 
     return 0;
 }

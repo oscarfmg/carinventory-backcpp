@@ -48,6 +48,7 @@ add_executable(server-crow
 ${CAR_SRCS}
 ${SRVRCROW_SRCS}
 "src/server_crow/main.cpp")
+target_compile_definitions(server-crow PUBLIC USE_PGSQL_REPO=1)
 target_link_libraries(server-crow pqxx fmt::fmt)
 
 enable_testing()

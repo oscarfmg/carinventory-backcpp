@@ -233,3 +233,6 @@ bool CarPgSqlRepository::configureConnection(std::string confFile) {
 
     return true;
 }
+
+CarPgSqlRepository::CarPgSqlRepository(std::string& connString)
+    : m_connString(connString) {}

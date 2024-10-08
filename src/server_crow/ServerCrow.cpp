@@ -14,9 +14,9 @@ void ServerCrow::init() {
 
         vector<Car> cars;
         if (start < 0)
-            cars = m_repo->readAll();
+            cars = m_repo.readAll();
         else
-            cars = m_repo->read(start,limit);
+            cars = m_repo.read(start,limit);
         stringstream ss;
         ss << "[";
         for(auto it = cars.begin(); it != cars.end();) {
@@ -32,7 +32,7 @@ void ServerCrow::init() {
 
     /* GET */
     CROW_ROUTE(app, "/car/<int>")([&](int id) {
-        auto car = m_repo->read(id);
+        auto car = m_repo.read(id);
         if (car.id == -1) {
             return crow::response(404);
         }
@@ -41,7 +41,7 @@ void ServerCrow::init() {
 
     /* GET */
     CROW_ROUTE(app, "/car/getCount")([&]() {
-        int count = m_repo->getCount();
+        int count = m_repo.getCount();
         auto ans = fmt::format("{{\"count\":{}}}",count);
         return crow::response("application/json", ans);
     });
@@ -70,7 +70,7 @@ void ServerCrow::init() {
             if (car.id == -2) {
                 return crow::response(400);
             }
-            auto resp = m_repo->create(car);
+            auto resp = m_repo.create(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
@@ -82,12 +82,12 @@ void ServerCrow::init() {
         .methods("POST"_method)([&](const crow::request& req) {
             auto body = crow::json::load(req.body);
             if(!body) return crow::response(400);
-            int nextID = m_repo->getNextID();
+            int nextID = m_repo.getNextID();
             Car car = json2Car(body, nextID);
             if (car.id == -2) {
                 return crow::response(400);
             }
-            auto resp = m_repo->create(car);
+            auto resp = m_repo.create(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
@@ -115,7 +115,7 @@ void ServerCrow::init() {
         .methods("PATCH"_method)([&](const crow::request& req, int id){
             auto body = crow::json::load(req.body);
             if(!body) return crow::response(400);
-            Car car = m_repo->read(id);
+            Car car = m_repo.read(id);
             if (car.id == -1) {
                 return crow::response(404);
             }
@@ -123,7 +123,7 @@ void ServerCrow::init() {
             if (car.id == -2) {
                 return crow::response(400);
             }
-            auto resp = m_repo->update(car);
+            auto resp = m_repo.update(car);
             if (resp.id == -1) {
                 return crow::response(400);
             }
@@ -135,7 +135,7 @@ void ServerCrow::init() {
         .methods("DELETE"_method)([&](const crow::request& req, int id) {
             Car car;
             car.id=id;
-            auto resp = m_repo->del(car);
+            auto resp = m_repo.del(car);
             if (resp.id == -1) {
                 return crow::response(404);
             }

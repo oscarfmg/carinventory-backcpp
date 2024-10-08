@@ -35,6 +35,10 @@ protected:
 
     CarMemRepository repo;
     ServerCrow app;
+
+    ServerCrowTest() 
+        : testing::Test()
+        , app(repo) {}
 };
 
 void ServerCrowTest::SetUp() {
@@ -43,7 +47,6 @@ void ServerCrowTest::SetUp() {
     repo.create({3,"tres","three",3,"drei","trois",3});
     repo.create({4,"cuatro","four",4,"vier","quatre",4});
 
-    app.setRepo(&repo);
     app.init();
     app.loglevel(crow::LogLevel::ERROR);
     app.validate();
